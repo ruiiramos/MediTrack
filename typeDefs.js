@@ -8,15 +8,23 @@ const typeDefs = gql`
     medications: [Medication]
   }
 
-  type Medication {
-    id: ID!
-    name: String!
-    dosage: String!
-    frequency: String!
-    startDate: String!
-    endDate: String
-    user: User!
-  }
+enum MedicationType {
+  PILL
+  SYRUP
+  INJECTION
+}
+
+type Medication {
+  id: ID!
+  name: String!
+  medicationType: MedicationType!
+  dosage: String!
+  frequency: Int! 
+  startDate: Date!
+  startTime: Time!
+  endDate: Date
+  user: User!
+}
 
   type Query {
     getUser(id: ID!): User
