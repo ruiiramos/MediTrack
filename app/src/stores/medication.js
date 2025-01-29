@@ -1,5 +1,5 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 export function validateMedicationForm(inputFields) {
   const errors = {};
@@ -42,3 +42,23 @@ export function validateMedicationForm(inputFields) {
 
   return errors;
 }
+
+export const useMedicationStore = defineStore('medication', () => {
+  const currentMedications = ref([]);
+  const pastMedications = ref([]);
+
+  const addMedication = (medication) => {
+    currentMedications.value.push(medication);
+  };
+
+  const removeMedication = (index) => {
+    currentMedications.value.splice(index, 1);
+  };
+
+  return {
+    currentMedications,
+    pastMedications,
+    addMedication,
+    removeMedication,
+  };
+});
