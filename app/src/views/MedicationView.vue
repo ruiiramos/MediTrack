@@ -1,5 +1,9 @@
 <template>
+
   <div class="container">
+    <div>
+      <router-link to="/profile">Go to Profile</router-link>
+    </div>
     <div class="form-container">
       <MedicationForm @add-medication="addMedication" />
     </div>
@@ -10,9 +14,9 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import MedicationForm from '../components/MedicationForm.vue';
 import MedicationList from '../components/MedicationList.vue';
-import { ref } from 'vue';
 
 export default {
   components: {

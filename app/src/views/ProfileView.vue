@@ -1,5 +1,8 @@
 <template>
   <div class="profile">
+    <div>
+      <router-link to="/medication">Go to Medication</router-link>
+    </div>
     <h2 class="title">Profile</h2>
     <h1 class="greeting">Hello, {{ userName }}</h1>
 
@@ -22,7 +25,7 @@
       </div>
     </div>
 
-    <button class="add-button" @click="navigateToMedicationScreen">Add Medication</button>
+    <router-link to="/medication" class="add-button">Add Medication</router-link>
 
     <div class="medications-container">
       <div class="current-medications">
@@ -85,10 +88,6 @@ export default {
       return currentFrequency + pastFrequency;
     });
 
-    const navigateToMedicationScreen = () => {
-      this.$router.push('/medication');
-    };
-
     return {
       currentMedications,
       pastMedications,
@@ -96,7 +95,6 @@ export default {
       totalDosage,
       totalDuration,
       totalFrequency,
-      navigateToMedicationScreen,
     };
   },
 };
@@ -111,7 +109,6 @@ export default {
 .greeting {
   font-size: 20px;
   font-weight: bold;
-  margin-top: 0px;
   margin-bottom: 10px;
 }
 
@@ -119,7 +116,6 @@ export default {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
-  margin-top: -0px;
 }
 
 .stats-container {
@@ -182,5 +178,8 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 </style>
