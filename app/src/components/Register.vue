@@ -3,6 +3,11 @@
     <h1 class="title">Register</h1>
     <input
       class="input"
+      placeholder="Name"
+      v-model="name"
+    />
+    <input
+      class="input"
       placeholder="Email"
       v-model="email"
     />
@@ -11,11 +16,6 @@
       placeholder="Password"
       type="password"
       v-model="password"
-    />
-    <input
-      class="input"
-      placeholder="Name"
-      v-model="name"
     />
     <button class="button" @click="handleSubmit">
       Create Account
@@ -26,6 +26,8 @@
 
 <script>
 import { ref } from 'vue';
+import { useMutation } from '@vue/apollo-composable';
+import { REGISTER_USER } from '../api/queries';
 
 export default {
   name: 'Register',
@@ -34,12 +36,17 @@ export default {
     const password = ref('');
     const name = ref('');
 
-    const handleSubmit = () => {
-      // Add your registration logic here
-      console.log('Email:', email.value);
-      console.log('Password:', password.value);
-      console.log('Name:', name.value);
-      alert('Registration attempt');
+    const { mutate: register } = useMutation(REGISTER_USER);
+
+    const handleSubmit = async () => {
+      try {
+        const response = await register({ name: name.value, email: email.value, password: password.value });
+        console.log('User registered:', response.data.register);
+        alert('Registration successful');
+      } catch (error) {
+        console.error('Error registering user:', error);
+        alert('Registration failed');
+      }
     };
 
     return {

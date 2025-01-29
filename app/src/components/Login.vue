@@ -1,10 +1,11 @@
+<!-- filepath: /c:/Users/ruira/OneDrive/Documentos/TSIW/3º Ano/Serviços e Interfaces para a Cloud/Projeto 3/MediTrack/app/src/components/Login.vue -->
 <template>
   <div class="login-container">
     <h1 class="title">Login</h1>
     <input
       class="input"
-      placeholder="Username"
-      v-model="username"
+      placeholder="Email"
+      v-model="email"
     />
     <input
       class="input"
@@ -21,21 +22,35 @@
 
 <script>
 import { ref } from 'vue';
+import { useMutation } from '@vue/apollo-composable';
+import { useRouter } from 'vue-router';
+import { LOGIN_USER } from '../api/queries';
 
 export default {
   name: 'Login',
   setup() {
-    const username = ref('');
+    const email = ref('');
     const password = ref('');
+    const router = useRouter();
 
-    const handleSubmit = () => {
-      console.log('Username:', username.value);
-      console.log('Password:', password.value);
-      alert('Login attempt');
+    const { mutate: login } = useMutation(LOGIN_USER);
+
+    const handleSubmit = async () => {
+      try {
+        const response = await login({ email: email.value, password: password.value });
+        const token = response.data.login.token;
+        console.log('User logged in, token:', token);
+        localStorage.setItem('authToken', token); // Armazena o token no localStorage
+        alert('Login successful');
+        router.push({ name: 'profile' }); // Redireciona para a página de perfil
+      } catch (error) {
+        console.error('Error logging in:', error);
+        alert('Login failed');
+      }
     };
 
     return {
-      username,
+      email,
       password,
       handleSubmit,
     };
