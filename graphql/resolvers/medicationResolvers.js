@@ -1,4 +1,5 @@
 import Medication from '../models/Medication.js';
+import MedicationLog from '../models/MedicationLog.js';
 
 const medicationResolvers = {
   Query: {
@@ -7,7 +8,10 @@ const medicationResolvers = {
         throw new Error("Unauthorized");
       }
       try {
-        return await Medication.findAll({ where: { user_id: userId } });
+        return await Medication.findAll({ 
+          where: { user_id: userId }, 
+          include: [{ model: MedicationLog }] // Inclui os logs
+        });
       } catch (error) {
         console.error("Erro ao obter medicações:", error);
         throw new Error("Não foi possível obter as medicações.");
@@ -19,7 +23,9 @@ const medicationResolvers = {
         throw new Error("Unauthorized");
       }
       try {
-        const medication = await Medication.findByPk(id);
+        const medication = await Medication.findByPk(id, {
+          include: [{ model: MedicationLog }] // Inclui os logs no resultado
+        });
         if (!medication) throw new Error("Medicação não encontrada.");
         return medication;
       } catch (error) {
@@ -31,7 +37,6 @@ const medicationResolvers = {
 
   Mutation: {
     addMedication: async (_, { input }, context) => {
-      //console.log("ola")
       if (!context.user.loggedIn) {
         throw new Error("Unauthorized");
       }
@@ -73,7 +78,10 @@ const medicationResolvers = {
         const medication = await Medication.findByPk(id);
         if (!medication) throw new Error("Medicação não encontrada.");
 
+        // Apagar primeiro os logs antes da medicação
+        await MedicationLog.destroy({ where: { medication_id: id } });
         await medication.destroy();
+
         return true;
       } catch (error) {
         console.error("Erro ao remover medicação:", error);

@@ -23,9 +23,24 @@ const medicationTypeDefs = gql`
     end_date: String!
   }
 
+  type MedicationLog {
+    id: ID!
+    medication_id: ID!
+    user_id: ID!
+    date: String!
+    status: String!
+    note: String
+  }
+
+  type MedicationLogs {
+    active: [MedicationLog]
+    expired: [MedicationLog]
+  }
+
   type Query {
     getMedications(userId: ID!): [Medication]
     getMedication(id: ID!): Medication
+    getMedicationLogs(medicationId: ID!): MedicationLogs  # Corrigido para retornar MedicationLogs
   }
 
   type Mutation {
