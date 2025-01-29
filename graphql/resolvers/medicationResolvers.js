@@ -1,36 +1,45 @@
 import Medication from '../models/Medication.js';
-import MedicationLog from '../models/MedicationLog.js';
+import { Op } from 'sequelize';
 
 const medicationResolvers = {
   Query: {
-    getMedications: async (_, { userId }, context) => {
+    getCurrentMedications: async (_, { userId }, context) => {
       if (!context.user.loggedIn) {
         throw new Error("Unauthorized");
       }
       try {
-        return await Medication.findAll({ 
-          where: { user_id: userId }, 
-          include: [{ model: MedicationLog }] // Inclui os logs
+        const today = new Date();
+        return await Medication.findAll({
+          where: {
+            user_id: userId,
+            end_date: {
+              [Op.lte]: today
+            }
+          }
         });
       } catch (error) {
-        console.error("Erro ao obter medicações:", error);
-        throw new Error("Não foi possível obter as medicações.");
+        console.error("Erro ao obter medicações atuais:", error);
+        throw new Error("Não foi possível obter as medicações atuais.");
       }
     },
 
-    getMedication: async (_, { id }, context) => {
+    getHistoricalMedications: async (_, { userId }, context) => {
       if (!context.user.loggedIn) {
         throw new Error("Unauthorized");
       }
       try {
-        const medication = await Medication.findByPk(id, {
-          include: [{ model: MedicationLog }] // Inclui os logs no resultado
+        const today = new Date();
+        return await Medication.findAll({
+          where: {
+            user_id: userId,
+            end_date: {
+              [Op.gt]: today
+            }
+          }
         });
-        if (!medication) throw new Error("Medicação não encontrada.");
-        return medication;
       } catch (error) {
-        console.error("Erro ao obter medicação:", error);
-        throw new Error("Não foi possível obter a medicação.");
+        console.error("Erro ao obter histórico de medicações:", error);
+        throw new Error("Não foi possível obter o histórico de medicações.");
       }
     },
   },
@@ -78,10 +87,7 @@ const medicationResolvers = {
         const medication = await Medication.findByPk(id);
         if (!medication) throw new Error("Medicação não encontrada.");
 
-        // Apagar primeiro os logs antes da medicação
-        await MedicationLog.destroy({ where: { medication_id: id } });
         await medication.destroy();
-
         return true;
       } catch (error) {
         console.error("Erro ao remover medicação:", error);
