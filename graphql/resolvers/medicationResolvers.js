@@ -2,7 +2,10 @@ import Medication from '../models/Medication.js';
 
 const medicationResolvers = {
   Query: {
-    getMedications: async (_, { userId }) => {
+    getMedications: async (_, { userId }, context) => {
+      if (!context.user.loggedIn) {
+        throw new Error("Unauthorized");
+      }
       try {
         return await Medication.findAll({ where: { user_id: userId } });
       } catch (error) {
@@ -11,7 +14,10 @@ const medicationResolvers = {
       }
     },
 
-    getMedication: async (_, { id }) => {
+    getMedication: async (_, { id }, context) => {
+      if (!context.user.loggedIn) {
+        throw new Error("Unauthorized");
+      }
       try {
         const medication = await Medication.findByPk(id);
         if (!medication) throw new Error("Medicação não encontrada.");
@@ -24,21 +30,29 @@ const medicationResolvers = {
   },
 
   Mutation: {
-    addMedication: async (_, { input }) => {
+    addMedication: async (_, { input }, context) => {
+      //console.log("ola")
+      if (!context.user.loggedIn) {
+        throw new Error("Unauthorized");
+      }
+      
       try {
         const medication = await Medication.create({
           ...input,
-          user_id: 5,
+          user_id: context.user.id,
         });
         console.log("Medicação adicionada:", medication);
         return medication;
       } catch (error) {
-        console.error("Erro ao adicionar medicação:", error);
+        console.error("Erro ao adicionar medicação:", error.message, error.stack);
         throw new Error("Não foi possível adicionar a medicação.");
       }
     },
 
-    updateMedication: async (_, { id, input }) => {
+    updateMedication: async (_, { id, input }, context) => {
+      if (!context.user.loggedIn) {
+        throw new Error("Unauthorized");
+      }
       try {
         const medication = await Medication.findByPk(id);
         if (!medication) throw new Error("Medicação não encontrada.");
@@ -51,7 +65,10 @@ const medicationResolvers = {
       }
     },
 
-    deleteMedication: async (_, { id }) => {
+    deleteMedication: async (_, { id }, context) => {
+      if (!context.user.loggedIn) {
+        throw new Error("Unauthorized");
+      }
       try {
         const medication = await Medication.findByPk(id);
         if (!medication) throw new Error("Medicação não encontrada.");

@@ -9,49 +9,43 @@ const userResolvers = {
     },
   },
   Mutation: {
-    registerUser: async (_, { input }) => {
-      if (Object.values(input).length === 0)
-        throw new Error("You need to provide the body with the request.");
-    
-      const { name, email, password } = input;
-    
-      if (!name || !email || !password) 
-        throw new Error("Fields missing");
-    
-      const userFound = await User.findOne({ where: { email } });
-      if (userFound) throw new Error("Email in use");
-    
-      const hashedPassword = await bcrypt.hash(password, 10);
-    
-      const user = new User({
-        name,
-        email,
-        password: hashedPassword,
-      });
-    
-      const newUser = await user.save();
-      return newUser;
-    },
-    loginUser: async (_, { input }) => {
-      if (Object.values(input).length === 0)
-        throw new Error("You need to provide the body with the request.");
-    
-      const { email, password } = input;
-    
-      if (!email || !password) throw new Error("Fields missing");
-    
-      const user = await User.findOne({ where: { email } });
-      if (!user) throw new Error("User not found");
-    
-      const check = await bcrypt.compare(password, user.password);
-      if (!check) throw new Error("Wrong password");
-    
-      const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY, {
-        expiresIn: "7d",
-      });
-    
-      return { token };
-    },    
+    register: async (_, { name, email, password }) => {
+      try {
+          const existingUser = await User.findOne({ where: { email } });
+          if (existingUser) {
+              throw new Error('Email já está em uso.');
+          }
+
+          const hashedPassword = await bcrypt.hash(password, 10);
+
+          const user = await User.create({
+              name,
+              email,
+              password: hashedPassword,
+          });
+
+          return { id: user.id, name: user.name, email: user.email };
+      } catch (error) {
+          throw new Error(error.message);
+      }
+  },
+
+  login: async (_, { email, password }) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("Utilizador não encontrado");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Palavra-passe incorreta");
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_KEY, { expiresIn: "1h" });
+
+    return { token };
+  }    
   },
 };
 
