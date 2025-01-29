@@ -38,11 +38,8 @@ const medicationTypeDefs = gql`
   }
 
   type Query {
-    getMedications(userId: ID!): [Medication]
-    getMedication(id: ID!): Medication
-    getMedicationLogs(medicationId: ID!): MedicationLogs
-    getCurrentMedications(userId: ID!): [Medication]  # Nova query para medicamentos atuais
-    getHistoricalMedications(userId: ID!): [Medication]  # Nova query para histÃ³rico de medicamentos
+    getCurrentMedications(userId: ID!): [Medication]
+    getHistoricalMedications(userId: ID!): [Medication]
   }
 
   type Mutation {

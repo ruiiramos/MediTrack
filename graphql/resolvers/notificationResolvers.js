@@ -1,65 +1,35 @@
 import Notification from '../models/Notification.js';
+import Medication from '../models/Medication.js';
 
 const notificationResolvers = {
-  Query: {
-    getNotifications: async (_, { userId }) => {
-      try {
-        return await Notification.findAll({ where: { userId } });
-      } catch (error) {
-        console.error("Erro ao obter notificações:", error);
-        throw new Error("Não foi possível obter as notificações.");
-      }
-    },
-  },
-
   Mutation: {
-    addNotification: async (_, { input }) => {
+    scheduleNotifications: async () => {
       try {
-        const notification = await Notification.create(input);
-        console.log("Notificação adicionada:", notification);
-        return notification;
+        const medications = await Medication.findAll();
+
+        medications.forEach(async (medication) => {
+          const { id, name, dosage, start_time, frequency, start_date, end_date } = medication;
+          const startTime = new Date(start_date);
+          startTime.setHours(start_time.split(':')[0], start_time.split(':')[1]);
+
+          const endTime = new Date(end_date);
+          let currentTime = new Date(startTime);
+
+          while (currentTime <= endTime) {
+            await Notification.create({
+              medication_id: id,
+              alert_time: new Date(currentTime),
+              status: 'pending',
+            });
+
+            currentTime.setHours(currentTime.getHours() + frequency);
+          }
+        });
+
+        return "Notifications scheduled successfully";
       } catch (error) {
-        console.error("Erro ao adicionar notificação:", error);
-        throw new Error("Não foi possível adicionar a notificação.");
-      }
-    },
-
-    updateNotification: async (_, { id, input }) => {
-      try {
-        const notification = await Notification.findByPk(id);
-        if (!notification) throw new Error("Notificação não encontrada.");
-
-        await notification.update(input);
-        return notification;
-      } catch (error) {
-        console.error("Erro ao atualizar notificação:", error);
-        throw new Error("Não foi possível atualizar a notificação.");
-      }
-    },
-
-    deleteNotification: async (_, { id }) => {
-      try {
-        const notification = await Notification.findByPk(id);
-        if (!notification) throw new Error("Notificação não encontrada.");
-
-        await notification.destroy();
-        return true;
-      } catch (error) {
-        console.error("Erro ao remover notificação:", error);
-        return false;
-      }
-    },
-
-    markNotificationAsRead: async (_, { id }) => {
-      try {
-        const notification = await Notification.findByPk(id);
-        if (!notification) throw new Error("Notificação não encontrada.");
-
-        await notification.update({ status: 'read' });
-        return notification;
-      } catch (error) {
-        console.error("Erro ao marcar notificação como lida:", error);
-        throw new Error("Não foi possível atualizar a notificação.");
+        console.error(error);
+        throw new Error("Failed to schedule notifications");
       }
     },
   },
