@@ -8,17 +8,18 @@ const MedicationLog = sequelize.define('MedicationLog', {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
+    allowNull: false,
   },
   medication_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: Medication, key: 'id' },
+    references: { model: 'medication', key: 'id' },
     onDelete: 'CASCADE',
   },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: User, key: 'id' },
+    references: { model: 'user', key: 'id' },
     onDelete: 'CASCADE',
   },
   taken_at: {

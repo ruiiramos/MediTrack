@@ -6,6 +6,7 @@ const Notification = sequelize.define('Notification', {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
+    allowNull: false,
   },
   medication_id: {
     type: DataTypes.INTEGER,
