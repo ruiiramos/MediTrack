@@ -4,9 +4,19 @@ import Medication from '../models/Medication.js';
 
 const notificationResolvers = {
   Query: {
-    getNotifications: async () => {
+    getNotifications: async (_, __, context) => {
       try {
-        const notifications = await Notification.findAll();
+        if (!context.user || !context.user.id) {
+          throw new Error("Unauthorized");
+        }
+    
+        const notifications = await Notification.findAll({
+          include: [{
+            model: Medication,
+            where: { user_id: context.user.id }
+          }]
+        });
+    
         return notifications;
       } catch (error) {
         console.error(error);
