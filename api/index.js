@@ -12,7 +12,6 @@ import cors from 'cors';
 import Notification from './graphql/models/Notification.js';
 import Medication from './graphql/models/Medication.js';
 import User from './graphql/models/User.js';
-import MedicationLog from './graphql/models/MedicationLog.js';
 
 import userTypeDefs from './graphql/typeDefs/userTypeDefs.js';
 import medicationTypeDefs from './graphql/typeDefs/medicationTypeDefs.js';

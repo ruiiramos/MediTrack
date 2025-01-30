@@ -5,6 +5,9 @@ import { getMainDefinition } from '@apollo/client/utilities';
 
 const httpLink = new HttpLink({
   uri: 'http://localhost:80/graphql',
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+  },
 });
 
 const wsLink = new GraphQLWsLink(

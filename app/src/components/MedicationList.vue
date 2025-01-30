@@ -2,7 +2,7 @@
   <div class="regist-meds">
     <h2 class="form-title">Registered Medications</h2>
     <ul class="registeredMedsList">
-      <div v-for="(medication, index) in medications" :key="index" class="medication-item">
+      <li v-for="medication in medications" :key="medication.id" class="medication-item">
         <div class="medication-info">
           <strong>Name:</strong> {{ medication.name }}<br />
           <strong>Dosage:</strong> {{ medication.dosage }} mg<br />
@@ -13,7 +13,7 @@
           <strong>Time:</strong> {{ formatTime(medication.start_time) }}
         </div>
         <button @click="removeMedication(index)" class="remove-button">Remove</button>
-      </div>
+      </li>
     </ul>
     <p v-if="!loading && medications.length === 0" class="no-medications">No medications registered.</p>
     <p v-if="loading" class="loading">Loading medications...</p>
@@ -27,29 +27,25 @@ import { useQuery } from '@vue/apollo-composable';
 import { GET_CURRENT_MEDICATIONS } from '../api/queries';
 
 export default {
-  props: {
-    userId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
+  setup() {
     const medications = ref([]);
     const authToken = localStorage.getItem('authToken');
+    console.log('Auth Token:', authToken);
+    console.log('Fetching medications...');
 
-    const { result, loading, error } = useQuery(GET_CURRENT_MEDICATIONS, {
-      userId: props.userId,
-    }, {
+    const { result, loading, error } = useQuery(GET_CURRENT_MEDICATIONS, null, {
       context: {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: authToken ? `Bearer ${authToken}` : '',
         },
       },
     });
 
     watch(result, (newResult) => {
+      console.log('GraphQL Response:', newResult);
       if (newResult && newResult.data && newResult.data.getCurrentMedications) {
-        medications.value = newResult.data.getCurrentMedications;
+        console.log('Updating medications:', newResult.data.getCurrentMedications);
+        medications.value = [...newResult.data.getCurrentMedications];
       }
     });
 
@@ -107,13 +103,11 @@ export default {
   text-align: center;
   color: black;
   font-weight: bold;
-  width: 500px;
 }
 
 .medication-info {
   flex: 1;
   margin-right: 20px;
-  width: 500px;
 }
 
 .medication-item {

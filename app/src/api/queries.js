@@ -34,8 +34,8 @@ export const ADD_MEDICATION = gql`
 `;
 
 export const GET_CURRENT_MEDICATIONS = gql`
-  query GetCurrentMedications($userId: ID!) {
-    getCurrentMedications(userId: $userId) {
+  query GetCurrentMedications {
+    getCurrentMedications {
       id
       name
       dosage

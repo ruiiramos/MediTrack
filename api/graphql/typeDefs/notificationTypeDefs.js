@@ -8,8 +8,14 @@ const notificationTypeDefs = gql`
     status: String!
   }
 
+  type Query {
+    getNotifications: [Notification]
+  }
+
   type Mutation {
     scheduleNotifications: String
+    markNotificationsAsForgotten: String
+    markNotificationAsTaken(id: ID!): String
   }
 `;
 

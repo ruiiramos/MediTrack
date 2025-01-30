@@ -38,8 +38,8 @@ const medicationTypeDefs = gql`
   }
 
   type Query {
-    getCurrentMedications(userId: ID!): [Medication]
-    getHistoricalMedications(userId: ID!): [Medication]
+    getCurrentMedications: [Medication]
+    getHistoricalMedications: [Medication]
   }
 
   type Mutation {

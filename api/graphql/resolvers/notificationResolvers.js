@@ -1,7 +1,19 @@
+import { Op } from 'sequelize';
 import Notification from '../models/Notification.js';
 import Medication from '../models/Medication.js';
 
 const notificationResolvers = {
+  Query: {
+    getNotifications: async () => {
+      try {
+        const notifications = await Notification.findAll();
+        return notifications;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Failed to fetch notifications");
+      }
+    },
+  },
   Mutation: {
     scheduleNotifications: async () => {
       try {
@@ -30,6 +42,42 @@ const notificationResolvers = {
       } catch (error) {
         console.error(error);
         throw new Error("Failed to schedule notifications");
+      }
+    },
+    markNotificationsAsForgotten: async () => {
+      try {
+        const now = new Date();
+        await Notification.update(
+          { status: 'forgotten' },
+          {
+            where: {
+              alert_time: {
+                [Op.lt]: now,
+              },
+              status: 'pending',
+            },
+          }
+        );
+        return "Notifications updated to forgotten";
+      } catch (error) {
+        console.error(error);
+        throw new Error("Failed to update notifications to forgotten");
+      }
+    },
+    markNotificationAsTaken: async (_, { id }) => {
+      try {
+        await Notification.update(
+          { status: 'taken' },
+          {
+            where: {
+              id: id,
+            },
+          }
+        );
+        return "Notification marked as taken";
+      } catch (error) {
+        console.error(error);
+        throw new Error("Failed to mark notification as taken");
       }
     },
   },

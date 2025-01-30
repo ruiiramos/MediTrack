@@ -3,17 +3,17 @@ import { Op } from 'sequelize';
 
 const medicationResolvers = {
   Query: {
-    getCurrentMedications: async (_, { userId }, context) => {
-      if (!context.user.loggedIn) {
+    getCurrentMedications: async (_, {}, context) => {
+      if (!context.user.id) {
         throw new Error("Unauthorized");
       }
       try {
         const today = new Date();
         return await Medication.findAll({
           where: {
-            user_id: userId,
+            user_id: context.user.id,
             end_date: {
-              [Op.gt]: today // end_date ainda não passou
+              [Op.gt]: today
             }
           }
         });
@@ -23,15 +23,15 @@ const medicationResolvers = {
       }
     },
 
-    getHistoricalMedications: async (_, { userId }, context) => {
-      if (!context.user.loggedIn) {
+    getHistoricalMedications: async (_, {}, context) => {
+      if (!context.user.id) {
         throw new Error("Unauthorized");
       }
       try {
         const today = new Date();
         return await Medication.findAll({
           where: {
-            user_id: userId,
+            user_id: context.user.id,
             end_date: {
               [Op.lte]: today // end_date já passou
             }
