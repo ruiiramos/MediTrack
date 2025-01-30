@@ -13,7 +13,7 @@ const medicationResolvers = {
           where: {
             user_id: userId,
             end_date: {
-              [Op.lte]: today
+              [Op.gt]: today // end_date ainda não passou
             }
           }
         });
@@ -33,7 +33,7 @@ const medicationResolvers = {
           where: {
             user_id: userId,
             end_date: {
-              [Op.gt]: today
+              [Op.lte]: today // end_date já passou
             }
           }
         });
@@ -51,6 +51,7 @@ const medicationResolvers = {
       }
       
       try {
+        console.log(context.user.id);
         const medication = await Medication.create({
           ...input,
           user_id: context.user.id,

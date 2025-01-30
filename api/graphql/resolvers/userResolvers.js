@@ -31,7 +31,8 @@ const userResolvers = {
   },
 
   login: async (_, { email, password }) => {
-    const user = await User.findOne({ email });
+    console.log(email, password)
+    const user = await User.findOne({where: { email }});
 
     if (!user) {
       throw new Error("Utilizador não encontrado");
@@ -42,6 +43,8 @@ const userResolvers = {
       throw new Error("Palavra-passe incorreta");
     }
 
+
+    console.log(user.id)
     const token = jwt.sign({ userId: user.id }, process.env.JWT_KEY, { expiresIn: "1h" });
 
     return { token };

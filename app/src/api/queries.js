@@ -17,3 +17,33 @@ export const LOGIN_USER = gql`
     }
   }
 `;
+
+export const ADD_MEDICATION = gql`
+  mutation AddMedication($input: MedicationInput!) {
+    addMedication(input: $input) {
+      id
+      name
+      dosage
+      type
+      frequency
+      start_date
+      end_date
+      start_time
+    }
+  }
+`;
+
+export const GET_CURRENT_MEDICATIONS = gql`
+  query GetCurrentMedications($userId: ID!) {
+    getCurrentMedications(userId: $userId) {
+      id
+      name
+      dosage
+      type
+      frequency
+      start_date
+      end_date
+      start_time
+    }
+  }
+`;

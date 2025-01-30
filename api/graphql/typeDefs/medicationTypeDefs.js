@@ -4,7 +4,7 @@ const medicationTypeDefs = gql`
   type Medication {
     id: ID!
     name: String!
-    dosage: String!
+    dosage: Int!
     type: String!
     frequency: Int
     start_time: String
@@ -15,7 +15,7 @@ const medicationTypeDefs = gql`
 
   input MedicationInput {
     name: String!
-    dosage: String!
+    dosage: Int!
     type: String!
     frequency: Int
     start_time: String

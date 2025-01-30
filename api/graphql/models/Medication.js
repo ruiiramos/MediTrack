@@ -14,7 +14,7 @@ const Medication = sequelize.define('Medication', {
     allowNull: false,
   },
   dosage: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   type: {

@@ -42,6 +42,15 @@ const server = new ApolloServer({
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
+/* const syncModels = async () => {
+  await User.sync({ alter: true });
+  await Medication.sync({ alter: true });
+  await MedicationLog.sync({ alter: true });
+  await Notification.sync({ alter: true });
+  console.log('Tabelas sincronizadas com a base de dados.');
+};
+syncModels(); */
+
 const startServer = async () => {
   await server.start();
 
